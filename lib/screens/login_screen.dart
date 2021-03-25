@@ -191,13 +191,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (value.isEmpty) {
                                     return 'E-mail field is required';
                                   }
-                                  var email = value;
-                                  bool emailValid = RegExp(
-                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(email);
-                                  if (!emailValid) {
-                                    return 'E-mail must be valid';
-                                  }
+                                  // var email = value;
+                                  // bool emailValid = RegExp(
+                                  //         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  //     .hasMatch(email);
+                                  // if (!emailValid) {
+                                  //   return 'E-mail must be valid';
+                                  // }
                                   return null;
                                 },
                                 controller: emailController,
@@ -405,80 +405,83 @@ class _LoginScreenState extends State<LoginScreen> {
     // If the form is valid, display a snackbar. In the real world,
     // you'd often call a server or save the information in a database.
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-    _firebaseMessaging.getToken().then((value) {
+    await _firebaseMessaging.getToken().then((value) {
+      print(value);
       setState(() {
-        print(value);
         token = value;
       });
+      return value;
     });
 
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    // SharedPreferences localStorage = await SharedPreferences.getInstance();
 
-    setState(() {
-      _isLoading = false;
-    });
-    setState(() {
-      _isLoading = true;
-    });
-    // showLoadingDialog();
-    var data = {
-      'company_url_name': company,
-      'email': email,
-      'password': password,
-      'registration_id': token
-    };
-    var res = await Network().authData(data, 'auth-login');
-    var body = json.decode(res.body);
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    // // showLoadingDialog();
+    // var data = {
+    //   'company_url_name': company,
+    //   'email': email,
+    //   'password': password,
+    //   'registration_id': this.token
+    // };
 
-    if (body['code'] == 200) {
-      _isSnackbarActive = false;
-      body['companyUrl'] = company;
-      body['email'] = email;
-      body['password'] = password;
-      body['registrationid'] = token;
+    // var res = await Network().authData(data, 'auth-login');
+    // var body = json.decode(res.body);
 
-      List<AccountList> accounts = List<AccountList>();
+    // if (body['code'] == 200) {
+    //   _isSnackbarActive = false;
+    //   body['companyUrl'] = company;
+    //   body['email'] = email;
+    //   body['password'] = password;
+    //   body['registration_id'] = token;
 
-      var res = (localStorage.getString('accounts') != null)
-          ? jsonDecode(localStorage.getString('accounts'))
-          : List<AccountList>();
+    //   List<AccountList> accounts = List<AccountList>();
 
-      res.map((item) {
-        setState(() {
-          accounts.add(new AccountList.fromJson(item));
-        });
-      }).toList();
+    //   var res = (localStorage.getString('accounts') != null)
+    //       ? jsonDecode(localStorage.getString('accounts'))
+    //       : List<AccountList>();
 
-      if (accounts.indexWhere((element) => element.email == body['email']) ==
-          -1) {
-        print('new');
-        accounts.add(AccountList.fromJson(body));
-      } else {
-        print('update');
-        accounts[accounts
-                .indexWhere((element) => element.email == body['email'])] =
-            AccountList.fromJson(body);
-      }
+    //   res.map((item) {
+    //     setState(() {
+    //       accounts.add(new AccountList.fromJson(item));
+    //     });
+    //   }).toList();
 
-      localStorage.setString('accounts', jsonEncode(accounts));
-      // String data = localStorage.getString('accounts');
-      // print(data);
-      _snackbar('Logged in successfully',
-          color: Colors.green[400], action: false);
-      // hideLoadingDialog();
-      await Future.delayed(Duration(seconds: 2));
-      Navigator.of(context)
-          .push(FadeRoute(page: WebViewScreen(url: body['url'])));
-    } else {
-      print(json.encode(body));
-      if (!_isSnackbarActive) {
-        _snackbar(body['message'], color: Colors.red[600]);
-      }
+    //   if (accounts.indexWhere((element) => element.email == body['email']) ==
+    //       -1) {
+    //     print('new');
+    //     accounts.add(AccountList.fromJson(body));
+    //   } else {
+    //     print('update');
+    //     accounts[accounts
+    //             .indexWhere((element) => element.email == body['email'])] =
+    //         AccountList.fromJson(body);
+    //   }
 
-      setState(() {
-        _isLoading = false;
-      });
-      //   // hideLoadingDialog();
-    }
+    //   localStorage.setString('accounts', jsonEncode(accounts));
+    //   // String data = localStorage.getString('accounts');
+    //   // print(data);
+    //   _snackbar('Logged in successfully',
+    //       color: Colors.green[400], action: false);
+    //   // hideLoadingDialog();
+    //   await Future.delayed(Duration(seconds: 2));
+    //   await Navigator.of(context)
+    //       .push(FadeRoute(page: WebViewScreen(url: body['url'])));
+    //   // await Future.delayed(Duration(seconds: 2));
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    // } else {
+    //   print(json.encode(body));
+    //   if (!_isSnackbarActive) {
+    //     _snackbar(body['message'], color: Colors.red[600]);
+    //   }
+
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   //   // hideLoadingDialog();
+    // }
   }
 }
