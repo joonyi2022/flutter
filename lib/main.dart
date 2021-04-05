@@ -36,10 +36,12 @@ class PushNotificationScreen extends State<PushMessagingExample> {
         print("onResume: $message");
       },
     );
-    if (Platform.isIOS)
+    if (Platform.isIOS) {
       firebaseMessaging.requestNotificationPermissions(
           const IosNotificationSettings(
               sound: true, badge: true, alert: true, provisional: true));
+      print('test');
+    }
   }
 
   @override

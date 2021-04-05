@@ -44,6 +44,14 @@ class _LoginScreenState extends State<LoginScreen> {
       new TextEditingController(text: '');
 
   _getAccounts() async {
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    await _firebaseMessaging.getToken().then((value) {
+      print(value);
+      setState(() {
+        token = value;
+      });
+      return value;
+    });
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var res = (localStorage.getString('accounts') != null)
         ? jsonDecode(localStorage.getString('accounts'))
@@ -413,75 +421,75 @@ class _LoginScreenState extends State<LoginScreen> {
       return value;
     });
 
-    // SharedPreferences localStorage = await SharedPreferences.getInstance();
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
 
-    // setState(() {
-    //   _isLoading = true;
-    // });
-    // // showLoadingDialog();
-    // var data = {
-    //   'company_url_name': company,
-    //   'email': email,
-    //   'password': password,
-    //   'registration_id': this.token
-    // };
+    setState(() {
+      _isLoading = true;
+    });
+    // showLoadingDialog();
+    var data = {
+      'company_url_name': company,
+      'email': email,
+      'password': password,
+      'registration_id': this.token
+    };
 
-    // var res = await Network().authData(data, 'auth-login');
-    // var body = json.decode(res.body);
+    var res = await Network().authData(data, 'auth-login');
+    var body = json.decode(res.body);
 
-    // if (body['code'] == 200) {
-    //   _isSnackbarActive = false;
-    //   body['companyUrl'] = company;
-    //   body['email'] = email;
-    //   body['password'] = password;
-    //   body['registration_id'] = token;
+    if (body['code'] == 200) {
+      _isSnackbarActive = false;
+      body['companyUrl'] = company;
+      body['email'] = email;
+      body['password'] = password;
+      body['registration_id'] = token;
 
-    //   List<AccountList> accounts = List<AccountList>();
+      List<AccountList> accounts = List<AccountList>();
 
-    //   var res = (localStorage.getString('accounts') != null)
-    //       ? jsonDecode(localStorage.getString('accounts'))
-    //       : List<AccountList>();
+      var res = (localStorage.getString('accounts') != null)
+          ? jsonDecode(localStorage.getString('accounts'))
+          : List<AccountList>();
 
-    //   res.map((item) {
-    //     setState(() {
-    //       accounts.add(new AccountList.fromJson(item));
-    //     });
-    //   }).toList();
+      res.map((item) {
+        setState(() {
+          accounts.add(new AccountList.fromJson(item));
+        });
+      }).toList();
 
-    //   if (accounts.indexWhere((element) => element.email == body['email']) ==
-    //       -1) {
-    //     print('new');
-    //     accounts.add(AccountList.fromJson(body));
-    //   } else {
-    //     print('update');
-    //     accounts[accounts
-    //             .indexWhere((element) => element.email == body['email'])] =
-    //         AccountList.fromJson(body);
-    //   }
+      if (accounts.indexWhere((element) => element.email == body['email']) ==
+          -1) {
+        print('new');
+        accounts.add(AccountList.fromJson(body));
+      } else {
+        print('update');
+        accounts[accounts
+                .indexWhere((element) => element.email == body['email'])] =
+            AccountList.fromJson(body);
+      }
 
-    //   localStorage.setString('accounts', jsonEncode(accounts));
-    //   // String data = localStorage.getString('accounts');
-    //   // print(data);
-    //   _snackbar('Logged in successfully',
-    //       color: Colors.green[400], action: false);
-    //   // hideLoadingDialog();
-    //   await Future.delayed(Duration(seconds: 2));
-    //   await Navigator.of(context)
-    //       .push(FadeRoute(page: WebViewScreen(url: body['url'])));
-    //   // await Future.delayed(Duration(seconds: 2));
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    // } else {
-    //   print(json.encode(body));
-    //   if (!_isSnackbarActive) {
-    //     _snackbar(body['message'], color: Colors.red[600]);
-    //   }
+      localStorage.setString('accounts', jsonEncode(accounts));
+      // String data = localStorage.getString('accounts');
+      // print(data);
+      _snackbar('Logged in successfully',
+          color: Colors.green[400], action: false);
+      // hideLoadingDialog();
+      await Future.delayed(Duration(seconds: 2));
+      await Navigator.of(context)
+          .push(FadeRoute(page: WebViewScreen(url: body['url'])));
+      // await Future.delayed(Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      print(json.encode(body));
+      if (!_isSnackbarActive) {
+        _snackbar(body['message'], color: Colors.red[600]);
+      }
 
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //   //   // hideLoadingDialog();
-    // }
+      setState(() {
+        _isLoading = false;
+      });
+      //   // hideLoadingDialog();
+    }
   }
 }
