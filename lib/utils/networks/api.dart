@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 
 class Network extends ChangeNotifier {
-  final String _url = 'https://login-odes.sgeede.com/api/';
+  final String _url = '';
 
   //if you are using android studio emulator, change localhost to 10.0.2.2
   var token;
