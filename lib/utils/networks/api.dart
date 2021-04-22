@@ -19,7 +19,12 @@ class Network extends ChangeNotifier {
 
   authData(data, apiUrl) async {
     var fullUrl = _url + apiUrl;
-    return await http.post(fullUrl, body: data);
+    var client = http.Client();
+    try {
+      return await client.post(fullUrl, body: data);
+    } finally {
+      client.close();
+    }
   }
 
   postData(apiUrl, data) async {

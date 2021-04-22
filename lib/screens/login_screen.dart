@@ -31,17 +31,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   bool _isSnackbarActive = false;
+  bool _multipleDatabase = true;
   String token = '';
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final TextEditingController companyController =
-      new TextEditingController(text: '');
+      new TextEditingController(text: 'https://dev.odes.com.sg');
   final TextEditingController emailController =
-      new TextEditingController(text: '');
+      new TextEditingController(text: 'odes-test@gmail.com');
   final TextEditingController passwordController =
-      new TextEditingController(text: '');
+      new TextEditingController(text: 'test12345');
+  final TextEditingController databaseController =
+      new TextEditingController(text: 'ODES_TEST');
 
   _getAccounts() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -318,6 +321,112 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
+                            Container(
+                              width: 295,
+                              margin: EdgeInsets.all(0),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    child: Row(
+                                      children: [
+                                        Theme(
+                                          data: ThemeData(
+                                            unselectedWidgetColor:
+                                                Colors.grey[300],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 10, right: 3),
+                                            child: SizedBox(
+                                              height: 30.0,
+                                              width: 30.0,
+                                              child: Checkbox(
+                                                activeColor: Colors.green,
+                                                value: _multipleDatabase,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    _multipleDatabase =
+                                                        newValue;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          'Multiple database',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (_multipleDatabase)
+                              Container(
+                                width: 300,
+                                margin: EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Database field is required';
+                                    }
+                                    return null;
+                                  },
+                                  controller: databaseController,
+                                  style: TextStyle(color: Colors.grey[600]),
+                                  decoration: InputDecoration(
+                                    hintText: "Database",
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 13,
+                                    ),
+                                    prefixIconConstraints: BoxConstraints(
+                                        minWidth: 23, maxHeight: 20),
+                                    prefixIcon: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 20, right: 10),
+                                        child: Icon(Icons.dns,
+                                            size: 20.0,
+                                            color: Colors.grey[400])),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 22, vertical: 10),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 0.4),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red[400], width: 2),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red[400], width: 1.5),
+                                    ),
+                                    errorStyle:
+                                        TextStyle(color: Colors.red[400]),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -329,7 +438,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             _isLoading = true;
                           });
                           signIn(companyController.text, emailController.text,
-                              passwordController.text);
+                              passwordController.text, databaseController.text);
                         }
                       },
                       minWidth: 120,
@@ -401,7 +510,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  signIn(company, email, password) async {
+  signIn(company, email, password, database) async {
     // If the form is valid, display a snackbar. In the real world,
     // you'd often call a server or save the information in a database.
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -429,7 +538,8 @@ class _LoginScreenState extends State<LoginScreen> {
       'company_url_name': company,
       'email': email,
       'password': password,
-      'registration_id': token
+      'registration_id': token,
+      'database_name': database
     };
 
     var resCheck = await Network()
@@ -458,6 +568,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body['email'] = email;
       body['password'] = password;
       body['registrationid'] = token;
+      body['database_name'] = database;
 
       List<AccountList> accounts = List<AccountList>();
 
@@ -493,13 +604,13 @@ class _LoginScreenState extends State<LoginScreen> {
           .push(FadeRoute(page: WebViewScreen(url: body['url'])));
     } else {
       print(json.encode(body));
-      if (!_isSnackbarActive) {
-        _snackbar(body['message'], color: Colors.red[600]);
-      }
 
       setState(() {
         _isLoading = false;
       });
+      if (!_isSnackbarActive) {
+        _snackbar(body['message'], color: Colors.red[600]);
+      }
       //   // hideLoadingDialog();
     }
   }
