@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:load/load.dart';
 import 'package:odes/screens/splash_screen.dart';
 import 'package:odes/screens/web_view_screen.dart';
 import 'package:odes/widgets/routeTransitions/fade_route.dart';
@@ -42,15 +43,7 @@ class PushNotificationScreen extends State<PushMessagingExample> {
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
-        print('redirecting');
-        navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (context) => WebViewScreen(url: message['redirection'])));
-        print('redirecting');
-        print(message['redirection']);
-        print('done');
-        // if (message['redirection'] != '') {
-        //   await _navigateToWebView(message['redirection']);
-        // }
+        _navigateToWebView(message['redirection']);
       },
     );
 
@@ -61,15 +54,15 @@ class PushNotificationScreen extends State<PushMessagingExample> {
     }
   }
 
-  Future<dynamic> _navigateToWebView(url) {
-    var data;
+  void _navigateToWebView(url) {
     // showLoadingDialog();
+    // print(url);
     // Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
     Navigator.of(context)
         .pushReplacement(FadeRoute(page: WebViewScreen(url: url)));
     // hideLoadingDialog();
 
-    return data;
+    hideLoadingDialog();
   }
 
   @override
