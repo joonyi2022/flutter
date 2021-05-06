@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:odes/screens/splash_screen.dart';
+import 'package:odes/screens/web_view_screen.dart';
+import 'package:odes/widgets/routeTransitions/fade_route.dart';
 
 void main() {
   runApp(
@@ -21,10 +23,17 @@ class PushMessagingExample extends StatefulWidget {
 class PushNotificationScreen extends State<PushMessagingExample> {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final TextEditingController controller = TextEditingController();
+  var redirect = '';
+  final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: "navigator");
 
   @override
   void initState() {
     super.initState();
+    fireBaseTrigger(context);
+  }
+
+  void fireBaseTrigger(BuildContext context) async {
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
@@ -34,12 +43,28 @@ class PushNotificationScreen extends State<PushMessagingExample> {
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
+        print('redirecting');
+        print('redirecting');
+        // print(message['redirection']);
+        print('done');
+        // if (message['redirection'] != '') {
+        //   await _navigateToWebView(message['redirection']);
+        // }
       },
     );
-    if (Platform.isIOS)
+
+    if (Platform.isIOS) {
       firebaseMessaging.requestNotificationPermissions(
           const IosNotificationSettings(
               sound: true, badge: true, alert: true, provisional: true));
+    }
+  }
+
+  void _navigateToWebView(url) {
+    // showLoadingDialog();
+    // Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
+    Navigator.of(context).push(FadeRoute(page: WebViewScreen(url: url)));
+    // hideLoadingDialog();
   }
 
   @override

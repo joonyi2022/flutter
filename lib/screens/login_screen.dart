@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     _getAccounts();
+
     super.initState();
   }
 
@@ -44,6 +45,13 @@ class _LoginScreenState extends State<LoginScreen> {
       new TextEditingController(text: '');
 
   _getAccounts() async {
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    await _firebaseMessaging.getToken().then((value) {
+      setState(() {
+        print(value);
+        token = value;
+      });
+    });
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var res = (localStorage.getString('accounts') != null)
         ? jsonDecode(localStorage.getString('accounts'))
