@@ -44,6 +44,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
+    hideLoadingDialog();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
