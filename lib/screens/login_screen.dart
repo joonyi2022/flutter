@@ -414,10 +414,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // you'd often call a server or save the information in a database.
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
     await _firebaseMessaging.getToken().then((value) {
-      print(value);
       setState(() {
         token = value;
       });
+      print(value);
       return value;
     });
 
@@ -427,6 +427,13 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
     // showLoadingDialog();
+    String sample = company;
+    var lastCharacter =
+        sample.substring((sample.length - 1).clamp(0, sample.length));
+    if (lastCharacter == '/') {
+      company = sample.substring(0, sample.length - 1);
+    }
+
     var data = {
       'company_url_name': company,
       'email': email,
@@ -434,7 +441,24 @@ class _LoginScreenState extends State<LoginScreen> {
       'registration_id': this.token
     };
 
-    var res = await Network().authData(data, 'auth-login');
+    var resCheck =
+        await Network().authData(data, 'https://odes.com.sg/api/auth-db');
+    var bodyCheck = json.decode(resCheck.body);
+    if (bodyCheck['code'] != 200) {
+      print(json.encode(bodyCheck));
+      if (!_isSnackbarActive) {
+        _snackbar(bodyCheck['message'], color: Colors.red[600]);
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      return;
+    }
+
+    print(company + '/api/auth-login');
+    var res = await Network().authData(data, company + '/api/auth-login');
     var body = json.decode(res.body);
 
     if (body['code'] == 200) {

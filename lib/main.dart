@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:odes/screens/splash_screen.dart';
+import 'package:odes/screens/web_view_screen.dart';
+import 'package:odes/widgets/routeTransitions/fade_route.dart';
 
 void main() {
   runApp(
@@ -21,27 +23,53 @@ class PushMessagingExample extends StatefulWidget {
 class PushNotificationScreen extends State<PushMessagingExample> {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final TextEditingController controller = TextEditingController();
+  var redirect = '';
+  final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: "navigator");
 
   @override
   void initState() {
     super.initState();
+
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
+        _navigateToWebView(message['redirection']);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
+        _navigateToWebView(message['redirection']);
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
+        print('redirecting');
+        navigatorKey.currentState.push(MaterialPageRoute(
+            builder: (context) => WebViewScreen(url: message['redirection'])));
+        print('redirecting');
+        print(message['redirection']);
+        print('done');
+        // if (message['redirection'] != '') {
+        //   await _navigateToWebView(message['redirection']);
+        // }
       },
     );
+
     if (Platform.isIOS) {
       firebaseMessaging.requestNotificationPermissions(
           const IosNotificationSettings(
               sound: true, badge: true, alert: true, provisional: true));
-      print('test');
     }
+  }
+
+  Future<dynamic> _navigateToWebView(url) {
+    var data;
+    // showLoadingDialog();
+    // Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
+    Navigator.of(context)
+        .pushReplacement(FadeRoute(page: WebViewScreen(url: url)));
+    // hideLoadingDialog();
+
+    return data;
   }
 
   @override

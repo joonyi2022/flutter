@@ -69,8 +69,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context)
-                      .pushReplacement(FadeRoute(page: Accountscreen()));
+                  Navigator.of(context).push(FadeRoute(page: Accountscreen()));
                 },
                 child: Icon(Icons.people)),
           ),
