@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:load/load.dart';
 import 'package:odes/screens/splash_screen.dart';
 import 'package:odes/screens/web_view_screen.dart';
 
@@ -47,6 +48,7 @@ class _MyAppState extends State<MyApp> {
 
   handleClickedNotification(message) {
     // Put your logic here before redirecting to your material page route if you want too
+    showLoadingDialog();
     navigatorKey.currentState.pushReplacement(MaterialPageRoute(
         builder: (context) => WebViewScreen(url: message['redirection'])));
   }
