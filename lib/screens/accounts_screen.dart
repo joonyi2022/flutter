@@ -44,22 +44,21 @@ class _AccountscreenState extends State<Accountscreen> {
       new TextEditingController(text: '');
 
   _getAccounts() async {
-    print('tetes');
-    // SharedPreferences localStorage = await SharedPreferences.getInstance();
-    // var res = (localStorage.getString('accounts') != null)
-    //     ? jsonDecode(localStorage.getString('accounts'))
-    //     : List<AccountList>();
-    // res.map((item) {
-    //   setState(() {
-    //     accounts.add(new AccountList.fromJson(item));
-    //   });
-    // }).toList();
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var res = (localStorage.getString('accounts') != null)
+        ? jsonDecode(localStorage.getString('accounts'))
+        : List<AccountList>();
+    res.map((item) {
+      setState(() {
+        accounts.add(new AccountList.fromJson(item));
+      });
+    }).toList();
 
-    // print(res.length);
-    // print(res);
-    // if (res.length == 0) {
-    //   Navigator.of(context).pushReplacement(FadeRoute(page: LoginScreen()));
-    // }
+    print(res.length);
+    print(res);
+    if (res.length == 0) {
+      Navigator.of(context).pushReplacement(FadeRoute(page: LoginScreen()));
+    }
   }
 
   _snackbar(msg, {Color color = Colors.grey, action = true}) {
@@ -305,8 +304,8 @@ class _AccountscreenState extends State<Accountscreen> {
                               // Navigator.of(context).push(FadeRoute(
                               //     page:
                               //         WebViewScreen(url: 'https://google.com')));
-                              Navigator.of(context).pushReplacement(
-                                  FadeRoute(page: LoginScreen()));
+                              Navigator.of(context)
+                                  .push(FadeRoute(page: LoginScreen()));
                             },
                             minWidth: 120,
                             color: Color(0xFFF9CA08),
