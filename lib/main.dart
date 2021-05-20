@@ -1,70 +1,107 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
 import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:load/load.dart';
+import 'package:flutter/material.dart';
 import 'package:odes/screens/splash_screen.dart';
-import 'package:odes/screens/web_view_screen.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+void main() {
+  runApp(
+    MaterialApp(
+      home: PushMessagingExample(),
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+      ),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
-class _MyAppState extends State<MyApp> {
-  final FirebaseMessaging _fcm = FirebaseMessaging(); // For FCM
-  final GlobalKey<NavigatorState> navigatorKey =
-      new GlobalKey<NavigatorState>(); // To be used as navigator
+class PushMessagingExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => PushNotificationScreen();
+}
+
+class PushNotificationScreen extends State<PushMessagingExample>
+    with ChangeNotifier {
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  final TextEditingController controller = TextEditingController();
+  ValueNotifier<int> notificationCounterValueNotifer = ValueNotifier(1);
 
   @override
   void initState() {
-    /* Handle Notifications */
-    _fcm.configure(
+    super.initState();
+    firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        // TODO: As per your need
+        print("onMessage: $message");
+        FlutterAppBadger.updateBadgeCount(1);
       },
       onLaunch: (Map<String, dynamic> message) async {
-        // On App Launch
-        handleClickedNotification(message);
+        // FlutterAppBadger.removeBadge();
+        print("onLaunch: $message");
+        FlutterAppBadger.removeBadge();
       },
       onResume: (Map<String, dynamic> message) async {
-        // On App Resume
-        print(message);
-        return handleClickedNotification(message);
+        FlutterAppBadger.updateBadgeCount(1);
+        print("onResume: $message");
       },
     );
-
-    if (Platform.isIOS) {
-      // _fcm.requestNotificationPermissions(IosNotificationSettings());
-
-      _fcm.requestNotificationPermissions(const IosNotificationSettings(
-          sound: true, badge: true, alert: true, provisional: true));
-    }
-
-    super.initState();
-  }
-
-  handleClickedNotification(message) {
-    // Put your logic here before redirecting to your material page route if you want too
-    showLoadingDialog();
-    navigatorKey.currentState.pushReplacement(MaterialPageRoute(
-        builder: (context) =>
-            WebViewScreen(url: message['data']['redirection'])));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    if (Platform.isIOS)
+      firebaseMessaging.requestNotificationPermissions(
+          const IosNotificationSettings(
+              sound: true, badge: true, alert: true, provisional: true));
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
-      home: SplashScreen(),
+    return Scaffold(
+      body: SplashScreen(),
     );
+  }
+
+  Widget buildBody() {
+    return Container(
+      height: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            width: 100,
+            child: TextField(
+              controller: controller,
+            ),
+          ),
+          RaisedButton(
+            color: Colors.white54,
+            child: const Text(
+              "Subscribe",
+              style: TextStyle(color: Colors.lightGreen),
+            ),
+            onPressed: () {
+              firebaseMessaging.subscribeToTopic(controller.text);
+              clearText();
+            },
+          ),
+          RaisedButton(
+            color: Colors.white54,
+            child: const Text(
+              "Unsubscribe",
+              style: TextStyle(color: Colors.redAccent),
+            ),
+            onPressed: () {
+              firebaseMessaging.unsubscribeFromTopic(controller.text);
+              clearText();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void clearText() {
+    setState(() {
+      controller.text = "";
+    });
   }
 }

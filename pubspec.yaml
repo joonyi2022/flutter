@@ -37,6 +37,7 @@ dependencies:
   http: ^0.12.0
   webview_flutter: ^1.0.7
   load: ^0.1.6
+  flutter_app_badger: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,14 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/svg/
+
+  plugin:
+    platforms:
+      android:
+        package: fr.g123k.flutterappbadger
+        pluginClass: FlutterAppBadgerPlugin
+      ios:
+        pluginClass: FlutterAppBadgerPlugin
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
