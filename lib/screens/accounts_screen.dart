@@ -190,7 +190,7 @@ class _AccountscreenState extends State<Accountscreen> {
                                         var account = accounts[index];
                                         return Material(
                                           child: InkWell(
-                                            onDoubleTap: () async {
+                                            onTap: () async {
                                               showLoadingDialog();
 
                                               await Future.delayed(
@@ -266,7 +266,7 @@ class _AccountscreenState extends State<Accountscreen> {
                                                         InkWell(
                                                           child: Icon(
                                                             Icons.delete,
-                                                            size: 18.0,
+                                                            size: 25.0,
                                                             color: Colors
                                                                 .grey[700],
                                                           ),

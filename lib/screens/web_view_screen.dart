@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:load/load.dart';
 import 'package:odes/screens/accounts_screen.dart';
 import 'package:odes/widgets/routeTransitions/fade_route.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 const String kNavigationExamplePage = '''
@@ -46,7 +47,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
     super.initState();
     // hideLoadingDialog();
     print('here');
+    setCounter(0);
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+  }
+
+  setCounter(data) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.setString('counter', data.toString());
   }
 
   @override
