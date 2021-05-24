@@ -50,6 +50,7 @@ class _MyAppState extends State<MyApp> {
         int counter = getCounter();
         int newCounter = counter + 1;
         setCounter(newCounter);
+
         FlutterAppBadger.updateBadgeCount(counter);
         FlutterAppBadger.removeBadge();
       },
@@ -115,7 +116,8 @@ class _MyAppState extends State<MyApp> {
     showLoadingDialog();
 
     navigatorKey.currentState.pushReplacement(MaterialPageRoute(
-        builder: (context) => WebViewScreen(url: message['redirection'])));
+        builder: (context) =>
+            WebViewScreen(url: message['data']['redirection'])));
   }
 
   @override
