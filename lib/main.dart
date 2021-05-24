@@ -35,12 +35,10 @@ class _MyAppState extends State<MyApp> {
   void pushNotificaiton() {
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print('onMessage');
-        setState(() {
-          _counter = 0;
-        });
-        FlutterAppBadger.updateBadgeCount(0);
-        FlutterAppBadger.removeBadge();
+        int counter = getCounter();
+        int newCounter = counter + 1;
+        setCounter(newCounter);
+        FlutterAppBadger.updateBadgeCount(counter);
       },
       onLaunch: (Map<String, dynamic> message) async {
         // On App Launch
@@ -51,7 +49,6 @@ class _MyAppState extends State<MyApp> {
         int newCounter = counter + 1;
         setCounter(newCounter);
         FlutterAppBadger.updateBadgeCount(counter);
-        FlutterAppBadger.removeBadge();
       },
       onResume: (Map<String, dynamic> message) async {
         // On App Resume
@@ -83,6 +80,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   setCounter(data) async {
+    print(data.toString());
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     localStorage.setString('counter', data.toString());
   }
