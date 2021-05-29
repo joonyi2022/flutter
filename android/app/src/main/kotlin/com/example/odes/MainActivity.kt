@@ -1,4 +1,4 @@
-package com.example.odes
+package sg.com.odes.app.android
 
 import io.flutter.embedding.android.FlutterActivity
 

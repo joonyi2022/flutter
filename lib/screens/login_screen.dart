@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _getAccounts() async {
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
     await _firebaseMessaging.getToken().then((value) {
-      print(value);
+      print('token : ' + value);
       setState(() {
         token = value;
       });
