@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
   handleClickedNotification(message) {
     // Put your logic here before redirecting to your material page route if you want too
     showLoadingDialog();
-
+    print(message['data']['redirection']);
     navigatorKey.currentState.pushReplacement(MaterialPageRoute(
         builder: (context) =>
             WebViewScreen(url: message['data']['redirection'])));
