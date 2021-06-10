@@ -39,8 +39,8 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _counter = 0;
         });
-        FlutterAppBadger.updateBadgeCount(0);
-        FlutterAppBadger.removeBadge();
+        // FlutterAppBadger.updateBadgeCount(0);
+        // FlutterAppBadger.removeBadge();
       },
       onLaunch: (Map<String, dynamic> message) async {
         // On App Launch
