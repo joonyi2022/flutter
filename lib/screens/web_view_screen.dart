@@ -42,11 +42,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
+  bool isLoading=true;
+  final _key = UniqueKey();
+  
   @override
   void initState() {
     super.initState();
     // hideLoadingDialog();
-    print('here');
     setCounter(0);
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
@@ -112,6 +114,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
           onPageFinished: (String url) {
             print('Page finished loading: $url');
+            setState(() {
+              isLoading = false;
+            });
           },
           gestureNavigationEnabled: true,
         );

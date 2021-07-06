@@ -39,6 +39,7 @@ dependencies:
   webview_flutter: ^1.0.7
   load: ^0.1.6
   flutter_app_badger: ^1.1.2
+  sentry_flutter: ^4.0.6
 
 dev_dependencies:
   flutter_test:

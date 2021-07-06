@@ -9,6 +9,7 @@ import 'package:odes/models/accountListModel.dart';
 import 'package:odes/screens/login_screen.dart';
 import 'package:odes/screens/web_view_screen.dart';
 import 'package:odes/widgets/routeTransitions/fade_route.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:odes/widgets/routeTransitions/fade_route.dart';
 import 'package:odes/utils/networks/api.dart';
@@ -191,15 +192,20 @@ class _AccountscreenState extends State<Accountscreen> {
                                         return Material(
                                           child: InkWell(
                                             onTap: () async {
-                                              showLoadingDialog();
-
-                                              await Future.delayed(
-                                                  Duration(seconds: 1));
+                                              // showLoadingDialog();
+                                              // await Future.delayed(
+                                              //     Duration(seconds: 1));
+                                              
+                                              // FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+                                              
+                                              // await _firebaseMessaging.getToken().then((value) {
+                                              //   Sentry.captureMessage(account.url+'|'+value);
+                                              // });
+                                              // hideLoadingDialog();                                              
                                               Navigator.of(context).push(
                                                   FadeRoute(
                                                       page: WebViewScreen(
                                                           url: account.url)));
-                                              hideLoadingDialog();
                                             },
                                             child: Column(
                                               children: [

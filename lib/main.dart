@@ -8,8 +8,19 @@ import 'package:odes/screens/splash_screen.dart';
 import 'package:odes/screens/web_view_screen.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://b9c2adfaf9b349bb8fa986ae3113c999@o912887.ingest.sentry.io/5850240';
+    },
+    // Init your App.
+    appRunner: () => runApp(MyApp()),
+  );
+}
 
 class MyApp extends StatefulWidget {
   @override
