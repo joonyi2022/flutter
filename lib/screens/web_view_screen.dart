@@ -44,6 +44,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   bool isLoading=true;
   final _key = UniqueKey();
+
+  bool _isSnackbarActive = false;
+  String token = '';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   
   @override
   void initState() {
@@ -58,9 +62,36 @@ class _WebViewScreenState extends State<WebViewScreen> {
     localStorage.setString('counter', data.toString());
   }
 
+  _snackbar(msg, {Color color = Colors.grey, action = true}) {
+    final snackBar = SnackBar(
+      content: Text(msg),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: color,
+      action: action == false
+          ? null
+          : SnackBarAction(
+              label: 'Close',
+              textColor: Colors.white,
+              onPressed: () {
+                // Some code to undo the change!
+              },
+            ),
+    );
+    _isSnackbarActive = true;
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    _scaffoldKey.currentState
+        .showSnackBar(snackBar)
+        .closed
+        .then((SnackBarClosedReason reason) {
+      // snackbar is now closed.
+      _isSnackbarActive = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         // title: const Text('Odes'),
         backgroundColor: new Color(0xFF1366B7),
@@ -89,8 +120,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
+      body: Stack(children: [
+        WebView(
+          key: _key,
           initialUrl: widget.url,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
@@ -103,24 +135,29 @@ class _WebViewScreenState extends State<WebViewScreen> {
           ].toSet(),
           navigationDelegate: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
+              _snackbar('blocking navigation to $request}', color: Colors.orange[600]);
               return NavigationDecision.prevent;
             }
             print('allowing navigation to $request');
+            // _snackbar('allowing navigation', color: Colors.blue[600]);
             return NavigationDecision.navigate;
           },
           onPageStarted: (String url) {
             print('Page started loading: $url');
+            _snackbar('Page started loading', color: Colors.blue[600]);
           },
           onPageFinished: (String url) {
-            print('Page finished loading: $url');
             setState(() {
               isLoading = false;
             });
+            print('Page finished loading: $url');
+            _snackbar('Page finished loading', color: Colors.blue[600]);
           },
           gestureNavigationEnabled: true,
-        );
-      }),
+        ),
+        isLoading ? Center( child: CircularProgressIndicator(),)
+                    : Stack(),
+      ],),
       // floatingActionButton: favoriteButton(),
     );
   }
